@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+git_branch_name() {
+	echo $(git symbolic-ref HEAD 2>/dev/null | awk -F/ {'print $NF'})
+}
+
+git_num_untracked_files() {
+	echo $(git status --porcelain 2>/dev/null | grep "^??" | wc -l)
+}
