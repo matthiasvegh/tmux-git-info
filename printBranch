@@ -77,15 +77,15 @@ my $color;
 my $symbolColor;
 my $symbol;
 
-my $IBlack = "\\e[0;90m";
-my $IRed = "\\e[0;91m";
-my $IGreen = "\\e[0;92m";
-my $IYellow = "\\e[0;93m";
-my $IBlue = "\\e[0;94m";
-my $IPurple = "\\e[0;95m";
-my $ICyan = "\\e[0;96m";
-my $IWhite = "\\e[0;97m";
-my $Color_Off = "\\e[0m";
+my $IBlack =	"#[fg=black, bg=colour252, bold]";
+my $IRed =		"#[fg=red, bg=colour252, bold]";
+my $IGreen =	"#[fg=green, bg=colour252, bold]";
+my $IYellow =	"#[fg=yellow, bg=colour252, bold]";
+my $IBlue =		"#[fg=blue, bg=colour252, bold]";
+my $IPurple =	"#[fg=red, bg=colour252, bold]";
+my $ICyan =		"#[fg=green, bg=colour252, bold]";
+my $IWhite =	"#[fg=white, bg=colour252, bold]";
+my $Color_Off = "";
 
 if ($numFiles == 0) {
     $color = $IGreen;
@@ -150,7 +150,7 @@ if ($ARGV[0] eq "color") {
 } elsif ($ARGV[0] eq "all") {
     print "$color\n$symbolColor\n$symbol\n$branchName\n";
 } else {
-    print $color, "(", $symbolColor, $symbol, $color, $branchName, ")", $Color_Off;
+    print "#[fg=white]", $color, $symbolColor, $symbol, $color, $branchName, ")", $Color_Off;
 }
 
 
