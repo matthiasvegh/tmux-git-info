@@ -3,7 +3,9 @@
 tmux_pwd="$(tmux showenv $(tmux display -p 'TMUX_PWD_#D') | sed 's/^.*=//' )"
 
 cd $tmux_pwd
-echo $PWD
+echo -n $PWD
+my_dir=$(dirname $0)
+$my_dir/printBranch
 
 git_branch_name() {
 	echo $(git symbolic-ref HEAD 2>/dev/null | awk -F/ {'print $NF'})
