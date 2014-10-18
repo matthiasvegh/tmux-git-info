@@ -3,7 +3,7 @@
 tmux_pwd="$(tmux showenv $(tmux display -p 'TMUX_PWD_#D') | sed 's/^.*=//' )"
 
 cd $tmux_pwd
-echo -n $PWD
+echo -n "#[fg=colour234]#[fg=white, bg=colour234] $PWD "
 my_dir=$(dirname $0)
 $my_dir/printBranch
 
