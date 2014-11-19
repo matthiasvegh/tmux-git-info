@@ -5,9 +5,7 @@
 
 #include "Context.hpp"
 
-class Task {
-};
 
-static std::map<int, Task> tasks;
+static std::map<int, Context> tasks;
 
 #endif /* TASK_RUNNER_HPP_ */
