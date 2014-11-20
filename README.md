@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/matthiasvegh/tmux-git-info.png?label=ready&title=Ready)](https://waffle.io/matthiasvegh/tmux-git-info)
 tmux-git-info
 =============
 
