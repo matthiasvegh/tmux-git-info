@@ -4,6 +4,7 @@
 #include <string>
 #include <atomic>
 #include <memory>
+#include <thread>
 
 class Context: std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
@@ -20,6 +21,11 @@ public:
 
 	void run() {
 		isRunning = true;
+		std::thread t(
+				[&](){
+				std::system("ls -la");
+				}
+		);
 	}
 
 	void stop() {
