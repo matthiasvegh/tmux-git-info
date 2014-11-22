@@ -53,6 +53,10 @@ public:
 		isRunning = false;
 	}
 
+	std::string getResult() const {
+		return *currentResult.load();
+	}
+
 };
 
 #endif /* CONTEXT_HPP_ */
