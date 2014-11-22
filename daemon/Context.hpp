@@ -5,6 +5,24 @@
 #include <atomic>
 #include <memory>
 #include <thread>
+#include <cstdio>
+
+std::string runCommand(std::string command) {
+	std::FILE* pipe = popen(command.c_str(), "r");
+
+	if(!pipe) return "";
+
+	char buffer[128];
+
+	std::string result;
+
+	while(!std::feof(pipe)) {
+		std::fgets(buffer, sizeof(buffer), pipe);
+		result += buffer;
+	}
+	pclose(pipe);
+	return result;
+}
 
 class Context: std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
