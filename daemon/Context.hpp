@@ -28,10 +28,13 @@ class Context: std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
 	std::string cwd;
 
+	std::atomic<std::shared_ptr<std::string>> currentResult;
+
 public:
 
 	Context() {
 		isRunning.store(false);
+		currentResult.store(std::make_shared<std::string>(""));
 	}
 
 	void setCwd(std::string c) { cwd = std::move(c); }
@@ -41,7 +44,7 @@ public:
 		isRunning = true;
 		std::thread t(
 				[&](){
-				std::system("ls -la");
+					currentResult.store(std::make_shared<std::string>(runCommand("ls -la")));
 				}
 		);
 	}
