@@ -6,6 +6,37 @@
 #include <memory>
 #include <thread>
 #include <cstdio>
+#include <mutex>
+
+template<typename T>
+class AtomicWrapper {
+
+	mutable std::mutex lock;
+
+	T value;
+
+public:
+
+	template<typename U>
+	AtomicWrapper(U&& u) : lock() {
+		std::lock_guard<decltype(lock)>(lock);
+		value = T(u);
+	}
+
+	template<typename U>
+	AtomicWrapper& operator=(U&& newValue) {
+		std::lock_guard<decltype(lock)>(lock);
+		value = std::forward<U>(newValue);
+	}
+
+	operator T() const {
+		std::lock_guard<decltype(lock)>(lock);
+		T ret = value;
+		return ret;
+	}
+
+
+};
 
 std::string runCommand(std::string command) {
 	std::FILE* pipe = popen(command.c_str(), "r");
