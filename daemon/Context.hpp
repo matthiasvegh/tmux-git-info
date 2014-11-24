@@ -19,18 +19,19 @@ public:
 
 	template<typename U>
 	AtomicWrapper(U&& u) : lock() {
-		std::lock_guard<decltype(lock)>(lock);
+		std::lock_guard<decltype(lock)> g(lock);
 		value = T(u);
 	}
 
 	template<typename U>
 	AtomicWrapper& operator=(U&& newValue) {
-		std::lock_guard<decltype(lock)>(lock);
+		std::lock_guard<decltype(lock)> g(lock);
 		value = std::forward<U>(newValue);
+		return *this;
 	}
 
 	operator T() const {
-		std::lock_guard<decltype(lock)>(lock);
+		std::lock_guard<decltype(lock)> g(lock);
 		T ret = value;
 		return ret;
 	}
@@ -59,13 +60,12 @@ class Context: std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
 	std::string cwd;
 
-	std::atomic<std::shared_ptr<std::string>> currentResult;
+	AtomicWrapper<std::string> currentResult = "";
 
 public:
 
 	Context() {
 		isRunning.store(false);
-		currentResult.store(std::make_shared<std::string>(""));
 	}
 
 	void setCwd(std::string c) { cwd = std::move(c); }
@@ -75,7 +75,7 @@ public:
 		isRunning = true;
 		std::thread t(
 				[&](){
-					currentResult.store(std::make_shared<std::string>(runCommand("ls -la")));
+					currentResult = runCommand("ls -la");
 				}
 		);
 	}
@@ -85,7 +85,7 @@ public:
 	}
 
 	std::string getResult() const {
-		return *currentResult.load();
+		return currentResult;
 	}
 
 };
