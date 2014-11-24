@@ -7,6 +7,7 @@
 #include <thread>
 #include <cstdio>
 #include <mutex>
+#include <chrono>
 
 template<typename T>
 class AtomicWrapper {
@@ -75,7 +76,12 @@ public:
 		isRunning = true;
 		std::thread t(
 				[&](){
-					currentResult = runCommand("ls -la");
+					auto self = this->shared_from_this();
+					for(;;) {
+						if(isRunning.load())
+							self->currentResult = runCommand("ls -la");
+							std::this_thread::sleep_for(std::chrono::seconds(5));
+					}
 				}
 		);
 	}
@@ -86,6 +92,9 @@ public:
 
 	std::string getResult() const {
 		return currentResult;
+	}
+
+	~Context() {
 	}
 
 };
