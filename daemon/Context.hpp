@@ -60,6 +60,7 @@ std::string runCommand(std::string command) {
 class Context: std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
 	std::string cwd;
+	std::size_t paneId;
 
 	AtomicWrapper<std::string> currentResult = "";
 
@@ -69,7 +70,6 @@ public:
 		isRunning.store(false);
 	}
 
-	void setCwd(std::string c) { cwd = std::move(c); }
 	const std::string& getCwd() const { return cwd; }
 
 	void run() {
@@ -79,7 +79,7 @@ public:
 					auto self = this->shared_from_this();
 					for(;;) {
 						if(isRunning.load())
-							self->currentResult = runCommand("ls -la");
+							self->currentResult = runCommand("cd "+cwd+"&& ls -la");
 							std::this_thread::sleep_for(std::chrono::seconds(5));
 					}
 				}
