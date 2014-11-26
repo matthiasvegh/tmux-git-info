@@ -9,6 +9,8 @@
 #include <mutex>
 #include <chrono>
 
+#include "SharedMap.hpp"
+
 template<typename T>
 class AtomicWrapper {
 
