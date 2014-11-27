@@ -42,6 +42,11 @@ public:
 		return (*sharedMapImplInstance)[key];
 	}
 
+	bool insert(Key key, Value value) {
+		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
+		return sharedMapImplInstance->insert(std::move(key), std::move(value));
+	}
+
 
 };
 
