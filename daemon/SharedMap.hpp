@@ -15,11 +15,13 @@ class SharedMap {
 	constexpr static const char* sharedMemoryName = "tmuxinfod_shared_memory";
 	constexpr static const char* mapImplInstanceName = "tmuxinfod_SharedMapImpleInstance";
 	constexpr static const char* sharedMutexName = "tmuxinfod_SharedMutex";
-	using Allocator = boost::interprocess::allocator<std::pair<const Key, Value>, boost::interprocess::managed_shared_memory::segment_manager>;
-	using SharedMapImpl = boost::interprocess::map<Key, Value, std::less<Key>, Allocator>;
+
+	using Comparator = std::less<Key>;
+	using Allocator = boost::interprocess::allocator<std::pair<Key const, Value>, boost::interprocess::managed_shared_memory::segment_manager>;
+	using SharedMapImpl = boost::interprocess::map<Key, Value, Comparator, Allocator>;
 	using SharedMutex = boost::interprocess::interprocess_mutex;
 
-	const Allocator allocatorInstance;
+	Allocator allocatorInstance;
 	SharedMapImpl* sharedMapImplInstance;
 
 	SharedMutex* sharedMutex;
@@ -32,8 +34,12 @@ public:
 			sharedMemoryName,
 			65536),
 		allocatorInstance(sharedMemory.get_segment_manager()),
-		sharedMapImplInstance(sharedMemory.find_or_construct(mapImplInstanceName)),
-		sharedMutex(sharedMemory.find_or_construct(sharedMutexName))
+		sharedMapImplInstance(
+				sharedMemory.find_or_construct<SharedMapImpl>(mapImplInstanceName)(Comparator(), allocatorInstance)
+				),
+		sharedMutex(
+				sharedMemory.find_or_construct<SharedMutex>(sharedMutexName)()
+				)
 	{
 	}
 
@@ -42,9 +48,9 @@ public:
 		return (*sharedMapImplInstance)[key];
 	}
 
-	bool insert(Key key, Value value) {
+	void insert(Key key, Value value) {
 		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
-		return sharedMapImplInstance->insert(std::move(key), std::move(value));
+		(*sharedMapImplInstance)[key] = value;
 	}
 
 
