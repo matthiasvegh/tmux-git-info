@@ -37,7 +37,7 @@ public:
 	{
 	}
 
-	Value& operator[](const Key& key) {
+	Value operator[](const Key& key) const {
 		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
 		return (*sharedMapImplInstance)[key];
 	}
