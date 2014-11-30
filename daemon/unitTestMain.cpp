@@ -60,3 +60,14 @@ BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_large_strings) {
 	BOOST_CHECK_EQUAL(sm2[0], largeString);
 
 }
+
+BOOST_AUTO_TEST_CASE(SharedMap_allocated_strings_should_be_shared) {
+	SharedMap<int, std::string> sm;
+
+	std::string largeString = "111111111111111111111111111111111111111111111";
+
+	sm.insert(0, largeString);
+	void* ptr = &sm[0][0];
+
+	BOOST_CHECK(sm.isPointerShared(ptr));
+}
