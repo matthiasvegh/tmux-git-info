@@ -49,3 +49,14 @@ BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_keys_for_allocating_keys) 
 	BOOST_CHECK_EQUAL(sm2[0], "value");
 
 }
+
+BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_large_strings) {
+	SharedMap<int, std::string> sm1, sm2;
+
+	std::string largeString = "111111111111111111111111111111111111111111111";
+
+	sm1.insert(0, largeString);
+
+	BOOST_CHECK_EQUAL(sm2[0], largeString);
+
+}
