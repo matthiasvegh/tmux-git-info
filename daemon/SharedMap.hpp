@@ -14,6 +14,7 @@ class SharedMap {
 	constexpr static const char* sharedMemoryName = "tmuxinfod_shared_memory" __DATE__ __TIME__;
 	constexpr static const char* mapImplInstanceName = "tmuxinfod_SharedMapImpleInstance";
 	constexpr static const char* sharedMutexName = "tmuxinfod_SharedMutex";
+	constexpr static const std::size_t memorySize = 65536;
 
 	using Comparator = std::less<Key>;
 	using Allocator = boost::interprocess::allocator<std::pair<Key const, Value>, boost::interprocess::managed_shared_memory::segment_manager>;
@@ -32,7 +33,7 @@ public:
 		sharedMemory(
 			boost::interprocess::open_or_create,
 			sharedMemoryName,
-			65536),
+			memorySize),
 		allocatorInstance(sharedMemory.get_segment_manager()),
 		sharedMapImplInstance(
 				sharedMemory.find_or_construct<SharedMapImpl>(mapImplInstanceName)(Comparator(), allocatorInstance)
@@ -56,6 +57,13 @@ public:
 	Value at(const Key& k) const {
 		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
 		return sharedMapImplInstance->at(k);
+	}
+
+	bool isPointerShared(void* ptr) const {
+		void* start = sharedMemory.get_address();
+		void* end = (char*)start + memorySize;
+
+		return start <= ptr && ptr <= end;
 	}
 
 	~SharedMap() {
