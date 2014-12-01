@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(SharedMap_instances_should_be_independent_if_they_are_destr
 }
 
 BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_keys_for_allocating_keys) {
-	SharedMap<int, std::string> sm1, sm2;
+	SharedMap<int, SharedString> sm1, sm2;
 
 	sm1.insert(0, "value");
 	BOOST_CHECK_EQUAL(sm2[0], "value");
@@ -51,9 +51,9 @@ BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_keys_for_allocating_keys) 
 }
 
 BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_large_strings) {
-	SharedMap<int, std::string> sm1, sm2;
+	SharedMap<int, SharedString> sm1, sm2;
 
-	std::string largeString = "111111111111111111111111111111111111111111111";
+	const char* largeString = "111111111111111111111111111111111111111111111";
 
 	sm1.insert(0, largeString);
 
@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE(SharedMap_instances_should_share_large_strings) {
 }
 
 BOOST_AUTO_TEST_CASE(SharedMap_allocated_strings_should_be_shared) {
-	SharedMap<int, std::string> sm;
+	SharedMap<int, SharedString> sm;
 
-	std::string largeString = "111111111111111111111111111111111111111111111";
+	const char* largeString = "111111111111111111111111111111111111111111111";
 
 	sm.insert(0, largeString);
 	void* ptr = &sm[0][0];

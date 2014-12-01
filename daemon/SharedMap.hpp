@@ -5,8 +5,46 @@
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/map.hpp>
+#include <boost/interprocess/containers/string.hpp>
 #include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+
+using SharedString = boost::interprocess::basic_string<char, boost::interprocess::string::traits_type, boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager>>;
+
+namespace detail {
+
+template<typename T>
+struct void_ { typedef void type; };
+
+template<typename T, typename = void>
+struct HasAllocator {
+	static std::false_type value;
+};
+
+template<typename T>
+struct HasAllocator<T, typename void_<typename T::allocator_type>::type> {
+	static std::true_type value;
+};
+
+template<bool b>
+struct insertHelper {
+	template<typename T, typename Key, typename Value, typename Allocator>
+	static void insert(T& t, const Key& key, Value&& value, const Allocator&) {
+		auto p = std::make_pair(key, std::forward<Value>(value));
+		t.emplace(std::move(p));
+	}
+};
+
+template<>
+struct insertHelper<true> {
+	template<typename T, typename Key, typename Value, typename Allocator>
+	static void insert(T& t, const Key& key, Value&& value, const Allocator& allocator) {
+		auto p = std::make_pair(key, typename std::decay<decltype(t[key])>::type{value, allocator});
+		t.emplace(std::move(p));
+	}
+};
+
+} // namespace detail
 
 template<typename Key, typename Value>
 class SharedMap {
@@ -46,12 +84,17 @@ public:
 
 	Value operator[](const Key& key) const {
 		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
-		return (*sharedMapImplInstance)[key];
+		return sharedMapImplInstance->at(key);
 	}
 
-	void insert(Key key, Value value) {
+	template<typename U>
+	void insert(Key key, U value) {
 		boost::interprocess::scoped_lock<SharedMutex> lock(*sharedMutex);
-		(*sharedMapImplInstance)[key] = value;
+		detail::insertHelper<detail::HasAllocator<Value>::value>::insert(
+				*sharedMapImplInstance,
+				key,
+				value,
+				allocatorInstance);
 	}
 
 	Value at(const Key& k) const {
