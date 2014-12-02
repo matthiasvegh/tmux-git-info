@@ -44,6 +44,13 @@ struct insertHelper<true> {
 	}
 };
 
+template<typename T>
+struct isBoostAllocator: std::false_type { };
+
+template<typename... Ts>
+struct isBoostAllocator<boost::interprocess::allocator<Ts...>>: std::true_type { };
+
+
 } // namespace detail
 
 template<typename Key, typename Value>
