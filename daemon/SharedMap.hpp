@@ -17,14 +17,10 @@ template<typename T>
 struct void_ { typedef void type; };
 
 template<typename T, typename = void>
-struct HasAllocator {
-	static std::false_type value;
-};
+struct HasAllocator: std::false_type {};
 
 template<typename T>
-struct HasAllocator<T, typename void_<typename T::allocator_type>::type> {
-	static std::true_type value;
-};
+struct HasAllocator<T, typename void_<typename T::allocator_type>::type>: std::true_type {};
 
 template<bool b>
 struct insertHelper {
@@ -49,6 +45,20 @@ struct isBoostAllocator: std::false_type { };
 
 template<typename... Ts>
 struct isBoostAllocator<boost::interprocess::allocator<Ts...>>: std::true_type { };
+
+template<typename T, typename = void>
+struct isBoostAllocated: std::false_type { };
+
+template<typename T>
+struct isBoostAllocated<T, typename void_<typename isBoostAllocator<typename T::allocator_type>::type>::type>: std::true_type { };
+
+template<typename T>
+struct nonAllocatedOrBoostAllocated:
+	std::conditional<HasAllocator<T>::value,
+			isBoostAllocated<T>,
+			std::true_type>::type
+{
+};
 
 
 } // namespace detail

@@ -5,6 +5,22 @@
 
 #include "SharedMap.hpp"
 
+namespace detail {
+
+static_assert(!HasAllocator<int>::value, "");
+static_assert(!HasAllocator<char>::value, "");
+static_assert(!HasAllocator<float>::value, "");
+static_assert(!HasAllocator<bool>::value, "");
+static_assert(!HasAllocator<double>::value, "");
+static_assert(HasAllocator<std::string>::value, "");
+
+static_assert(nonAllocatedOrBoostAllocated<int>::value, "");
+static_assert(nonAllocatedOrBoostAllocated<float>::value, "");
+
+static_assert(nonAllocatedOrBoostAllocated<SharedString>::value, "");
+
+}; // detail tests
+
 BOOST_AUTO_TEST_CASE(SharedMap_basic_test) {
 
 	SharedMap<int, int> sm;
