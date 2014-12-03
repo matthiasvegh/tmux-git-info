@@ -17,6 +17,13 @@ static_assert(HasAllocator<std::string>::value, "");
 static_assert(nonAllocatedOrBoostAllocated<int>::value, "");
 static_assert(nonAllocatedOrBoostAllocated<float>::value, "");
 
+static_assert(!isBoostAllocator<std::allocator<int>>::value, "");
+static_assert(isBoostAllocator<
+		boost::interprocess::allocator<
+				char,
+				boost::interprocess::managed_shared_memory::segment_manager
+		>>::value, "");
+
 static_assert(nonAllocatedOrBoostAllocated<SharedString>::value, "");
 
 }; // detail tests
