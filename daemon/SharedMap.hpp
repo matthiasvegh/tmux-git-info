@@ -46,11 +46,8 @@ struct isBoostAllocator: std::false_type { };
 template<typename... Ts>
 struct isBoostAllocator<boost::interprocess::allocator<Ts...>>: std::true_type { };
 
-template<typename T, typename = void>
-struct isBoostAllocated: std::false_type { };
-
 template<typename T>
-struct isBoostAllocated<T, typename void_<typename isBoostAllocator<typename T::allocator_type>::type>::type>: std::true_type { };
+struct isBoostAllocated: isBoostAllocator<typename T::allocator_type> { };
 
 template<typename T>
 struct nonAllocatedOrBoostAllocated:

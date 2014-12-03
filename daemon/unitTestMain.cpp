@@ -25,6 +25,7 @@ static_assert(isBoostAllocator<
 		>>::value, "");
 
 static_assert(nonAllocatedOrBoostAllocated<SharedString>::value, "");
+static_assert(!nonAllocatedOrBoostAllocated<std::string>::value, "");
 
 }; // detail tests
 
