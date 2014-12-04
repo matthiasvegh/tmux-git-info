@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv) {
 
-	if(argc != 2 || argc != 4) {
+	if(argc != 2 && argc != 4) {
 		exit(1);
 	}
 
@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 	}
 
 	if(argc == 4) {
-		sm[std::atoi(argv[1])] = argv[2];
+		sm.insert(std::atoi(argv[1]), argv[2]);
 		std::this_thread::sleep_for(std::chrono::seconds(std::atoi(argv[3])));
 	}
 
