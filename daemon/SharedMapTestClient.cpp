@@ -10,15 +10,20 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	SharedMap<std::size_t, SharedString> sm;
+	try {
 
-	if(argc == 2) {
-		std::cout<<sm[std::atoi(argv[1])]<<std::endl;
+		SharedMap<std::size_t, SharedString> sm;
+
+		if(argc == 2) {
+			std::cout<<sm[std::atoi(argv[1])]<<std::endl;
+		}
+
+		if(argc == 4) {
+			sm.insert(std::atoi(argv[1]), argv[2]);
+			std::this_thread::sleep_for(std::chrono::seconds(std::atoi(argv[3])));
+		}
+
+	} catch(...) {
+		exit(1);
 	}
-
-	if(argc == 4) {
-		sm.insert(std::atoi(argv[1]), argv[2]);
-		std::this_thread::sleep_for(std::chrono::seconds(std::atoi(argv[3])));
-	}
-
 }

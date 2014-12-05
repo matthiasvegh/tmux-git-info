@@ -8,6 +8,7 @@
 #include <boost/interprocess/containers/string.hpp>
 #include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/config.hpp>
 
 using SharedString = boost::interprocess::basic_string<char, boost::interprocess::string::traits_type, boost::interprocess::allocator<char, boost::interprocess::managed_shared_memory::segment_manager>>;
 
@@ -63,7 +64,7 @@ struct nonAllocatedOrBoostAllocated:
 template<typename Key, typename Value>
 class SharedMap {
 
-	constexpr static const char* sharedMemoryName = "tmuxinfod_shared_memory" __DATE__ __TIME__;
+	constexpr static const char* sharedMemoryName = "tmuxinfod_shared_memory" __DATE__ __TIME__ BOOST_COMPILER BOOST_STDLIB;
 	constexpr static const char* mapImplInstanceName = "tmuxinfod_SharedMapImpleInstance";
 	constexpr static const char* sharedMutexName = "tmuxinfod_SharedMutex";
 	constexpr static const std::size_t memorySize = 65536;
