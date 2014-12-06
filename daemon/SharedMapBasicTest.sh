@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
 
-make testClient
 
-(sleep 1; ./testClient 1)&
+runTest() {
+	make testClient
 
-./testClient 1 asdf 3
+	input="ASDF"
+	./testClient 1 $input 3&
 
+	sleep 1
+	./testClient 1
+	result=$(./testClient 1)
+
+	if [ "$result" = "$input" ]; then
+		return 1
+	else
+		return 0
+	fi
+
+}
+
+runTest
