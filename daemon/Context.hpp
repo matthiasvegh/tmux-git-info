@@ -64,11 +64,13 @@ class Context: std::enable_shared_from_this<Context> {
 	std::string cwd;
 	std::size_t paneId;
 
+	SharedMap<std::size_t, SharedString>& sm;
+
 	AtomicWrapper<std::string> currentResult = "";
 
 public:
 
-	Context() {
+	Context(SharedMap<std::size_t, SharedString>& sm): sm(sm) {
 		isRunning.store(false);
 	}
 
@@ -82,6 +84,7 @@ public:
 					for(;;) {
 						if(isRunning.load())
 							self->currentResult = runCommand("cd "+cwd+"&& ls -la");
+							self->sm.insert(paneId, static_cast<std::string>(self->currentResult).c_str());
 							std::this_thread::sleep_for(std::chrono::seconds(5));
 					}
 				}
