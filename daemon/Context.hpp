@@ -11,37 +11,6 @@
 
 #include "SharedMap.hpp"
 
-template<typename T>
-class AtomicWrapper {
-
-	mutable std::mutex lock;
-
-	T value;
-
-public:
-
-	template<typename U>
-	AtomicWrapper(U&& u) : lock() {
-		std::lock_guard<decltype(lock)> g(lock);
-		value = T(u);
-	}
-
-	template<typename U>
-	AtomicWrapper& operator=(U&& newValue) {
-		std::lock_guard<decltype(lock)> g(lock);
-		value = std::forward<U>(newValue);
-		return *this;
-	}
-
-	operator T() const {
-		std::lock_guard<decltype(lock)> g(lock);
-		T ret = value;
-		return ret;
-	}
-
-
-};
-
 std::string runCommand(std::string command) {
 	std::FILE* pipe = popen(command.c_str(), "r");
 
@@ -66,8 +35,6 @@ class Context: std::enable_shared_from_this<Context> {
 
 	SharedMap<std::size_t, SharedString>& sm;
 
-	AtomicWrapper<std::string> currentResult = "";
-
 public:
 
 	Context(SharedMap<std::size_t, SharedString>& sm): sm(sm) {
@@ -82,10 +49,11 @@ public:
 				[&](){
 					auto self = this->shared_from_this();
 					for(;;) {
-						if(isRunning.load())
-							self->currentResult = runCommand("cd "+cwd+"&& ls -la");
-							self->sm.insert(paneId, static_cast<std::string>(self->currentResult).c_str());
+						if(isRunning.load()) {
+							std::string result = runCommand("cd "+cwd+"&& ls -la");
+							self->sm.insert(paneId, result.c_str());
 							std::this_thread::sleep_for(std::chrono::seconds(5));
+						}
 					}
 				}
 		);
@@ -96,7 +64,7 @@ public:
 	}
 
 	std::string getResult() const {
-		return currentResult;
+		return sm[paneId].c_str();
 	}
 
 	~Context() {
