@@ -1,8 +1,11 @@
 
-all: tmuxinfod unitTest testClient
+all: tmuxinfod tmuxinfo unitTest testClient
 
 clean:
 	rm -rf *.o tmuxinfod unitTest testClient
+
+tmuxinfo: tmuxinfo.cpp SharedMap.hpp
+	clang++ --std=c++1y tmuxinfo.cpp -lrt -o tmuxinfo
 
 tmuxinfod: main.cpp Context.hpp ConfigReader/ConfigReader.hpp SharedMap.hpp
 	clang++ --std=c++1y main.cpp -o tmuxinfod
