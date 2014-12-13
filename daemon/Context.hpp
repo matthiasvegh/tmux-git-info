@@ -28,7 +28,7 @@ std::string runCommand(std::string command) {
 	return result;
 }
 
-class Context: std::enable_shared_from_this<Context> {
+class Context: public std::enable_shared_from_this<Context> {
 	std::atomic_bool isRunning;
 	std::string cwd;
 	std::size_t paneId;
@@ -37,7 +37,7 @@ class Context: std::enable_shared_from_this<Context> {
 
 public:
 
-	Context(SharedMap<std::size_t, SharedString>& sm): sm(sm) {
+	Context(std::size_t paneId, SharedMap<std::size_t, SharedString>& sm): paneId(paneId), sm(sm) {
 		isRunning.store(false);
 	}
 

@@ -8,7 +8,7 @@ tmuxinfo: tmuxinfo.cpp SharedMap.hpp
 	clang++ --std=c++1y tmuxinfo.cpp -lrt -o tmuxinfo
 
 tmuxinfod: main.cpp Context.hpp ConfigReader/ConfigReader.hpp SharedMap.hpp
-	clang++ --std=c++1y main.cpp -o tmuxinfod
+	clang++ --std=c++1y main.cpp -lrt -o tmuxinfod
 
 unitTest: unitTestMain.cpp SharedMap.hpp
 	clang++ --std=c++1y unitTestMain.cpp -lboost_unit_test_framework -lrt -o unitTest
